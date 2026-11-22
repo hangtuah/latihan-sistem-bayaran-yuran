@@ -9,7 +9,7 @@ use App\Exceptions\InvoiceAlreadyPaidException;
 use App\Models\{Payment, Student};
 use App\Payments\PaymentProcessor;
 use App\Repositories\Contracts\InvoiceRepository;
-use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\{Cache, DB};
 
 final class PaymentService
 {
@@ -20,6 +20,13 @@ final class PaymentService
     ) {}
 
     public function pay(Student $student, PaymentData $data): Payment
+    {
+        // satu klik sahaja dalam satu masa, untuk setiap invois
+        return Cache::lock("invoice:{$data->invoiceId}:pay", 30)
+            ->block(10, fn () => $this->payNow($student, $data));
+    }
+
+    private function payNow(Student $student, PaymentData $data): Payment
     {
         $invoice = $this->invoices->findOrFail($data->invoiceId);
         if ($invoice->paid_at !== null) {
@@ -35,6 +42,6 @@ final class PaymentService
             ]);
             PaymentReceived::dispatch($payment);
             return $payment;
-        });
+        }, attempts: 3);
     }
 }

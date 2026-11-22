@@ -15,10 +15,8 @@ final class EloquentInvoiceRepository implements InvoiceRepository
 
     public function outstandingFor(Student $student): Collection
     {
-        return $student->invoices()
-            ->whereNull('paid_at')
-            ->orderBy('due_date')
-            ->get();
+        return $student->invoices()->outstanding()
+            ->orderBy('due_date')->get();
     }
 
     public function recordPayment(Invoice $invoice, array $attributes): Payment
@@ -31,17 +29,14 @@ final class EloquentInvoiceRepository implements InvoiceRepository
 
     public function overdue(): Collection
     {
-        return Invoice::whereNull('paid_at')
-            ->where('due_date', '<', today())
-            ->orderBy('due_date')
-            ->limit(50)
-            ->get();
+        return Invoice::with('student.programme')
+            ->overdue()
+            ->orderBy('due_date')->limit(50)->get();
     }
 
     public function overdueSummary(): array
     {
-        return Invoice::whereNull('paid_at')
-            ->where('due_date', '<', today())
+        return Invoice::overdue()
             ->selectRaw('count(*) as total_count, sum(amount) as total_amount')
             ->first()
             ->only(['total_count', 'total_amount']);

@@ -7,6 +7,7 @@ use App\Payments\{CardGateway, CounterGateway, EWalletGateway,
 use App\Repositories\Cached\CachedInvoiceRepository;
 use App\Repositories\Contracts\InvoiceRepository;
 use App\Repositories\Eloquent\EloquentInvoiceRepository;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\ServiceProvider;
 
 class AppServiceProvider extends ServiceProvider
@@ -33,6 +34,7 @@ class AppServiceProvider extends ServiceProvider
 
     public function boot(): void
     {
-        //
+        // Throw exception bila lazy loading berlaku, kecuali di produksi
+        Model::preventLazyLoading(! $this->app->isProduction());
     }
 }

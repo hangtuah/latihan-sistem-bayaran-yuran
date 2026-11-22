@@ -6,6 +6,7 @@ use App\Models\{Invoice, Payment, Student};
 use App\Repositories\Contracts\InvoiceRepository;
 use Illuminate\Contracts\Cache\Repository as Cache;
 use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Support\Facades\DB;
 
 final class CachedInvoiceRepository implements InvoiceRepository
 {
@@ -28,18 +29,28 @@ final class CachedInvoiceRepository implements InvoiceRepository
     public function recordPayment(Invoice $invoice, array $attributes): Payment
     {
         $payment = $this->inner->recordPayment($invoice, $attributes);
-        $this->cache->forget("invoices:outstanding:{$invoice->student_id}");
+
+        // padam selepas commit: request lain tidak sempat cache data lama
+        DB::afterCommit(function () use ($invoice) {
+            $this->cache->forget("invoices:outstanding:{$invoice->student_id}");
+            $this->cache->forget('invoices:overdue-summary');
+        });
 
         return $payment;
     }
 
     public function overdue(): Collection
     {
-        return $this->inner->overdue();
+        return $this->inner->overdue(); // senarai berubah setiap bayaran: tidak di-cache
     }
 
     public function overdueSummary(): array
     {
-        return $this->inner->overdueSummary();
+        // segar 5 minit; 5 - 15 minit pulangkan nilai lama sambil kira semula di belakang
+        return $this->cache->flexible(
+            'invoices:overdue-summary',
+            [300, 900],
+            fn () => $this->inner->overdueSummary(),
+        );
     }
 }
