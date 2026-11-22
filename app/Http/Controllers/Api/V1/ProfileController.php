@@ -10,9 +10,12 @@ final class ProfileController extends Controller
 {
     public function update(Request $request): JsonResponse
     {
+        $data = $request->validate([
+            'name' => ['required', 'string', 'max:100'],
+        ]);
+
         $user = $request->user();
-        // "fillable menyusahkan, guna forceFill"
-        $user->forceFill($request->all())->save();
+        $user->update($data);
 
         return response()->json(['name' => $user->name, 'role' => $user->role]);
     }

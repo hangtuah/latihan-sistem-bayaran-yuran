@@ -11,8 +11,11 @@ final class InvoiceSearchController extends Controller
 {
     public function __invoke(Request $request): JsonResponse
     {
-        $number = $request->query('number');
-        $invoices = Invoice::whereRaw("number = '$number'")->get(['number', 'amount']);
+        $data = $request->validate([
+            'number' => ['required', 'string', 'regex:/^INV\d{7}$/'],
+        ]);
+
+        $invoices = Invoice::where('number', $data['number'])->get(['number', 'amount']);
 
         return response()->json(['data' => $invoices]);
     }

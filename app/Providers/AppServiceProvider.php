@@ -43,6 +43,8 @@ class AppServiceProvider extends ServiceProvider
     {
         // Throw exception bila lazy loading berlaku, kecuali di produksi
         Model::preventLazyLoading(! $this->app->isProduction());
+        // medan yang tiada dalam $fillable: exception, bukan dibuang senyap
+        Model::preventSilentlyDiscardingAttributes(! $this->app->isProduction());
 
         Authenticate::redirectUsing(
             fn (Request $request) => $request->is('api/*') ? null : '/login'

@@ -7,6 +7,7 @@ use App\Http\Resources\InvoiceResource;
 use App\Models\Invoice;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
+use Illuminate\Support\Facades\Gate;
 
 final class InvoiceController extends Controller
 {
@@ -22,6 +23,8 @@ final class InvoiceController extends Controller
 
     public function show(Invoice $invoice): InvoiceResource
     {
+        Gate::authorize('view', $invoice);
+
         return new InvoiceResource($invoice);
     }
 }

@@ -11,10 +11,10 @@ final class StorePaymentRequest extends FormRequest
 {
     public function authorize(): bool
     {
-        // pelajar hanya boleh bayar invois sendiri
-        return Invoice::whereKey($this->integer('invoice_id'))
-            ->where('student_id', $this->user()->student->id)
-            ->exists();
+        $invoice = Invoice::find($this->integer('invoice_id'));
+
+        return $invoice !== null
+            && $this->user()->can('pay', $invoice);
     }
 
     public function rules(): array
