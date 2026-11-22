@@ -1,7 +1,7 @@
 <?php
 
 use App\Http\Controllers\Api\V1\{CollectionExportController, InvoiceController, InvoiceSearchController, PartnerPaymentController,
-    PaymentController, ProfileController, TokenController};
+    PaymentController, ProfileController, ReceiptController, TokenController};
 use App\Http\Controllers\Api\V2\InvoiceController as V2InvoiceController;
 use App\Http\Middleware\AssignRequestId;
 use App\Models\Payment;
@@ -26,6 +26,9 @@ Route::prefix('v1')->middleware(AssignRequestId::class)->group(function () {
             Route::post('payments', [PaymentController::class, 'store'])
                 ->middleware([CheckAbilities::class.':payments:create', 'throttle:payments']);
             Route::patch('profile', [ProfileController::class, 'update']);
+            Route::get('receipts/{payment}', [ReceiptController::class, 'show']);
+            Route::get('reports/payments-today', [ReceiptController::class, 'today'])
+                ->middleware('can:view-bursary-reports');
 
             Route::middleware('can:view-bursary-reports')->group(function () {
                 Route::get('reports/collections', fn () => [
