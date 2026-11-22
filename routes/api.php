@@ -1,6 +1,6 @@
 <?php
 
-use App\Http\Controllers\Api\V1\{InvoiceController, InvoiceSearchController, PartnerPaymentController,
+use App\Http\Controllers\Api\V1\{CollectionExportController, InvoiceController, InvoiceSearchController, PartnerPaymentController,
     PaymentController, ProfileController, TokenController};
 use App\Http\Controllers\Api\V2\InvoiceController as V2InvoiceController;
 use App\Models\Payment;
@@ -32,6 +32,7 @@ Route::prefix('v1')->group(function () {
                     'total' => Payment::whereDate('paid_at', today())->sum('amount'),
                 ]);
                 Route::get('search/invoices', InvoiceSearchController::class);
+                Route::post('reports/collections/exports', [CollectionExportController::class, 'store']);
             });
         });
 });
