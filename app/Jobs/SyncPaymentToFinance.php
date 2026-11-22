@@ -27,6 +27,10 @@ final class SyncPaymentToFinance implements ShouldQueue
                 'amount' => $this->payment->amount,
             ])
             ->throw();
+
+        Log::channel('payments')->info('Disalin ke sistem kewangan', [
+            'reference' => $this->payment->reference,
+        ]);
     }
 
     public function failed(?Throwable $exception): void

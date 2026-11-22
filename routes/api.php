@@ -3,12 +3,13 @@
 use App\Http\Controllers\Api\V1\{CollectionExportController, InvoiceController, InvoiceSearchController, PartnerPaymentController,
     PaymentController, ProfileController, TokenController};
 use App\Http\Controllers\Api\V2\InvoiceController as V2InvoiceController;
+use App\Http\Middleware\AssignRequestId;
 use App\Models\Payment;
 use Illuminate\Support\Facades\Route;
 use Laravel\Passport\Http\Middleware\EnsureClientIsResourceOwner;
 use Laravel\Sanctum\Http\Middleware\{CheckAbilities, EnsureFrontendRequestsAreStateful};
 
-Route::prefix('v1')->group(function () {
+Route::prefix('v1')->middleware(AssignRequestId::class)->group(function () {
     Route::post('tokens', [TokenController::class, 'store'])->middleware('throttle:login');
 
     // Sistem kewangan universiti: Passport client credentials

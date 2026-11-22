@@ -19,7 +19,7 @@ class Invoice extends Model
 
     protected $fillable = ['student_id', 'number', 'type', 'amount', 'due_date', 'paid_at'];
 
-    protected $casts = ['type' => FeeType::class, 'due_date' => 'date', 'paid_at' => 'datetime'];
+    protected $casts = ['type' => FeeType::class, 'due_date' => 'date', 'paid_at' => 'datetime', 'amount' => 'decimal:2'];
 
     public function student(): BelongsTo
     {

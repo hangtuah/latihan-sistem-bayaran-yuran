@@ -52,6 +52,15 @@ return [
 
     'channels' => [
 
+        // Satu baris JSON untuk setiap bayaran; disimpan 90 hari untuk audit
+        'payments' => [
+            'driver' => 'daily',
+            'path' => storage_path('logs/payments.log'),
+            'level' => 'info',
+            'max_files' => 90,
+            'formatter' => Monolog\Formatter\JsonFormatter::class,
+        ],
+
         'stack' => [
             'driver' => 'stack',
             'channels' => explode(',', (string) env('LOG_STACK', 'single')),

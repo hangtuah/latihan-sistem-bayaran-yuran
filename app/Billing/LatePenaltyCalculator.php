@@ -8,16 +8,20 @@ use Carbon\CarbonInterface;
 
 final class LatePenaltyCalculator
 {
+    private const MAX_PENALTY = 200.0;
+
     public function for(Invoice $invoice, CarbonInterface $today): float
     {
-        if ($today->lte($invoice->due_date)) {
+        if ($today->lte($invoice->due_date->endOfDay())) {
             return 0.0;
         }
 
-        return match ($invoice->type) {
-            FeeType::Semester    => $invoice->amount * 0.05,
-            FeeType::Hostel      => $invoice->amount * 0.02,
+        $rate = match ($invoice->type) {
+            FeeType::Semester    => 0.05,
+            FeeType::Hostel      => 0.02,
             FeeType::LibraryFine => 0.0,
         };
+
+        return min(round($invoice->amount * $rate, 2), self::MAX_PENALTY);
     }
 }

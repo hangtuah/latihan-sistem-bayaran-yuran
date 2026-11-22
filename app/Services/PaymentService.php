@@ -9,7 +9,7 @@ use App\Exceptions\InvoiceAlreadyPaidException;
 use App\Models\{Payment, Student};
 use App\Payments\PaymentProcessor;
 use App\Repositories\Contracts\InvoiceRepository;
-use Illuminate\Support\Facades\{Cache, DB};
+use Illuminate\Support\Facades\{Cache, DB, Log};
 
 final class PaymentService
 {
@@ -41,6 +41,12 @@ final class PaymentService
                 'amount' => $amount, 'reference' => $reference, 'paid_at' => now(),
             ]);
             PaymentReceived::dispatch($payment);
+            Log::channel('payments')->info('Bayaran diterima', [
+                'invoice' => $invoice->number,
+                'amount' => $payment->amount,
+                'method' => $payment->method->value,
+                'reference' => $payment->reference,
+            ]);
             return $payment;
         }, attempts: 3);
     }

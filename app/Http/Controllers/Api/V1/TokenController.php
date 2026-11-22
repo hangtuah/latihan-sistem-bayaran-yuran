@@ -7,12 +7,16 @@ use App\Models\User;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Validation\ValidationException;
 
 final class TokenController extends Controller
 {
     public function store(Request $request): JsonResponse
     {
+        // jangan log $request->all(): kata laluan akan masuk ke log
+        Log::info('Cubaan log masuk', $request->only('email', 'device_name'));
+
         $data = $request->validate([
             'email' => ['required', 'email'],
             'password' => ['required', 'string'],

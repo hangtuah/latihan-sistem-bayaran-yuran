@@ -14,7 +14,7 @@ class Payment extends Model
     // invoice_id diisi oleh $invoice->payments()->create()
     protected $fillable = ['student_id', 'method', 'amount', 'reference', 'paid_at'];
 
-    protected $casts = ['method' => PaymentMethod::class, 'paid_at' => 'datetime'];
+    protected $casts = ['method' => PaymentMethod::class, 'paid_at' => 'datetime', 'amount' => 'decimal:2'];
 
     public function student(): BelongsTo
     {
