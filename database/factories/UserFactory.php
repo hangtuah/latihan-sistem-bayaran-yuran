@@ -2,6 +2,7 @@
 
 namespace Database\Factories;
 
+use App\Models\Student;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Illuminate\Support\Facades\Hash;
@@ -31,6 +32,7 @@ class UserFactory extends Factory
             'password' => static::$password ??= Hash::make('password'),
             'remember_token' => Str::random(10),
             'student_id' => null,
+            'role' => 'student',
         ];
     }
 
@@ -42,5 +44,19 @@ class UserFactory extends Factory
         return $this->state(fn (array $attributes) => [
             'email_verified_at' => null,
         ]);
+    }
+
+    /** Pengguna dengan rekod pelajar sendiri (closure: setiap pengguna dapat pelajar baru). */
+    public function student(): static
+    {
+        return $this->state(fn () => [
+            'student_id' => Student::factory(),
+            'role' => 'student',
+        ]);
+    }
+
+    public function bursary(): static
+    {
+        return $this->state(['role' => 'bursary']);
     }
 }
