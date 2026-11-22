@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Enums\FeeType;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -13,7 +14,7 @@ class Invoice extends Model
 
     protected $fillable = ['student_id', 'number', 'type', 'amount', 'due_date', 'paid_at'];
 
-    protected $casts = ['due_date' => 'date', 'paid_at' => 'datetime'];
+    protected $casts = ['type' => FeeType::class, 'due_date' => 'date', 'paid_at' => 'datetime'];
 
     public function student(): BelongsTo
     {

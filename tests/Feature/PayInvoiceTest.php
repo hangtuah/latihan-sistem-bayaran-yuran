@@ -4,8 +4,11 @@ use App\Mail\PaymentReceipt;
 use App\Models\Invoice;
 use App\Models\Payment;
 use App\Models\Student;
+use App\Payments\PaymentProcessor;
+use App\Repositories\Contracts\InvoiceRepository;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Mail;
+use Tests\Fakes\FakePaymentGateway;
 
 // Ujian ini mesti kekal hijau sepanjang refactor Modul 1.
 // Ia menguji tingkah laku (apa yang pelajar nampak), bukan struktur kod.
@@ -78,4 +81,40 @@ it('menolak kaedah bayaran yang tidak wujud', function () {
     ])->assertSessionHasErrors('method');
 
     expect(Payment::count())->toBe(0);
+});
+
+// Dua ujian di bawah ditulis selepas refactor (Modul 1, Bahagian Container & DI)
+
+it('merekod bayaran dan caj gateway sekali sahaja', function () {
+    $gateway = new FakePaymentGateway();
+    $this->app->instance(PaymentProcessor::class, new PaymentProcessor([$gateway]));
+
+    $student = Student::factory()->create();
+    $invoice = Invoice::factory()->for($student)->create([
+        'amount' => 1250, 'due_date' => now()->addWeek(),
+    ]);
+
+    $this->actingAs($student->user)->post('/payments', [
+        'invoice_id' => $invoice->id,
+        'method'     => 'fpx',
+    ])->assertRedirect();
+
+    expect(Payment::sole()->amount)->toEqual(1250.0)
+        ->and($invoice->fresh()->paid_at)->not->toBeNull()
+        ->and($gateway->charges)->toHaveCount(1);
+});
+
+it('tidak memanggil recordPayment untuk invois yang sudah dibayar', function () {
+    $student = Student::factory()->create();
+    $invoice = Invoice::factory()->for($student)->create(['paid_at' => now()]);
+
+    $this->mock(InvoiceRepository::class, function ($mock) use ($invoice) {
+        $mock->shouldReceive('findOrFail')->andReturn($invoice);
+        $mock->shouldNotReceive('recordPayment');
+    });
+
+    $this->actingAs($student->user)->post('/payments', [
+        'invoice_id' => $invoice->id,
+        'method'     => 'fpx',
+    ])->assertSessionHasErrors('invoice_id');
 });
