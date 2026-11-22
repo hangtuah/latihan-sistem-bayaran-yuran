@@ -32,4 +32,14 @@ final class CachedInvoiceRepository implements InvoiceRepository
 
         return $payment;
     }
+
+    public function overdue(): Collection
+    {
+        return $this->inner->overdue();
+    }
+
+    public function overdueSummary(): array
+    {
+        return $this->inner->overdueSummary();
+    }
 }

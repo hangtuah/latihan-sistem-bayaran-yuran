@@ -14,4 +14,10 @@ interface InvoiceRepository
 
     /** Rekod bayaran dan tanda invois berbayar. */
     public function recordPayment(Invoice $invoice, array $attributes): Payment;
+
+    /** 50 invois belum bayar yang paling lama lewat. */
+    public function overdue(): Collection;
+
+    /** @return array{total_count: int, total_amount: string} */
+    public function overdueSummary(): array;
 }

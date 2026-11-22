@@ -16,4 +16,5 @@ Route::middleware('auth')->group(function () {
 // Pejabat Bendahari. Kawalan akses ditambah dalam Modul 3.
 Route::prefix('bursary')->group(function () {
     Route::get('/payments', [Bursary\PaymentController::class, 'index']);
+    Route::get('/overdue', [Bursary\OverdueInvoiceController::class, 'index']);
 });

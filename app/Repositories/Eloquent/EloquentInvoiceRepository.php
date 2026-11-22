@@ -28,4 +28,22 @@ final class EloquentInvoiceRepository implements InvoiceRepository
 
         return $payment;
     }
+
+    public function overdue(): Collection
+    {
+        return Invoice::whereNull('paid_at')
+            ->where('due_date', '<', today())
+            ->orderBy('due_date')
+            ->limit(50)
+            ->get();
+    }
+
+    public function overdueSummary(): array
+    {
+        return Invoice::whereNull('paid_at')
+            ->where('due_date', '<', today())
+            ->selectRaw('count(*) as total_count, sum(amount) as total_amount')
+            ->first()
+            ->only(['total_count', 'total_amount']);
+    }
 }
