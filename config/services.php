@@ -35,6 +35,11 @@ return [
         ],
     ],
 
+    // Sistem kewangan universiti (menerima salinan setiap bayaran)
+    'finance' => [
+        'url' => env('FINANCE_URL'),
+    ],
+
     // Gateway bayaran. URL bank sebenar hanya dalam .env pelayan production.
     'fpx' => [
         'url' => env('FPX_URL', 'https://fpx.example.test'),
