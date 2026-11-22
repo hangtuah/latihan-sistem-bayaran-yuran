@@ -41,7 +41,7 @@ class Invoice extends Model
     protected function overdue(Builder $query): void
     {
         $query->outstanding()
-            ->where('due_date', '<', today());
+            ->where('due_date', '<', today('Asia/Kuala_Lumpur'));
     }
 
     #[Scope]

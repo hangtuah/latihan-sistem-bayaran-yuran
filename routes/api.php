@@ -31,10 +31,17 @@ Route::prefix('v1')->middleware(AssignRequestId::class)->group(function () {
                 ->middleware('can:view-bursary-reports');
 
             Route::middleware('can:view-bursary-reports')->group(function () {
-                Route::get('reports/collections', fn () => [
-                    'date' => today()->toDateString(),
-                    'total' => Payment::whereDate('paid_at', today())->sum('amount'),
-                ]);
+                Route::get('reports/collections', function () {
+                    $day = now('Asia/Kuala_Lumpur');
+
+                    return [
+                        'date' => $day->toDateString(),
+                        'total' => Payment::whereBetween('paid_at', [
+                            $day->copy()->startOfDay()->utc(),
+                            $day->copy()->endOfDay()->utc(),
+                        ])->sum('amount'),
+                    ];
+                });
                 Route::get('search/invoices', InvoiceSearchController::class);
                 Route::post('reports/collections/exports', [CollectionExportController::class, 'store']);
             });

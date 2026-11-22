@@ -16,7 +16,7 @@ final class SendFeeReminders extends Command
     public function handle(): int
     {
         $invoices = Invoice::overdue()
-            ->whereDate('due_date', today()->subDays(7))
+            ->where('due_date', today('Asia/Kuala_Lumpur')->subDays(7)->toDateString())
             ->with('student');
 
         $count = 0;
