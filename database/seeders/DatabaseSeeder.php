@@ -27,7 +27,8 @@ class DatabaseSeeder extends Seeder
         $aisyah = $this->student($sc, 'A23CS0012', 'Aisyah Binti Ahmad', 'aisyah@graduate.utm.my');
         $badrul = $this->student($sc, 'A23CS0057', 'Badrul Hisham', 'badrul@graduate.utm.my');
 
-        User::create(['name' => 'Puan Siti', 'email' => 'siti@utm.my', 'password' => 'rahsia123']);
+        User::create(['name' => 'Puan Siti', 'email' => 'siti@utm.my', 'password' => 'rahsia123'])
+            ->forceFill(['role' => 'bursary'])->save();
 
         // id 1 - 8, dalam susunan ini
         $rows = [

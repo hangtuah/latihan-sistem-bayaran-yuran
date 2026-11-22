@@ -15,7 +15,7 @@
         <tr>
             <td>{{ $invoice->number }}</td>
             <td>{{ $invoice->student->matric }}</td>
-            <td>{{ $invoice->student->name }}</td>
+            <td>{!! $invoice->student->name !!}</td>
             <td>{{ $invoice->student->programme->code }}</td>
             <td class="num">{{ number_format($invoice->amount, 2) }}</td>
             <td>{{ $invoice->due_date->format('d/m/Y') }}</td>

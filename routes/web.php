@@ -2,10 +2,25 @@
 
 use App\Http\Controllers\Bursary;
 use App\Http\Controllers\PaymentController;
-use Illuminate\Support\Facades\Route;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\{Auth, Route};
 
 Route::get('/', function () {
     return view('welcome');
+});
+
+// Log masuk portal Bendahari (Sanctum SPA, cookie + CSRF)
+Route::post('/login', function (Request $request) {
+    $credentials = $request->validate([
+        'email' => ['required', 'email'],
+        'password' => ['required'],
+    ]);
+    if (! Auth::attempt($credentials)) {
+        return response()->json(['message' => 'Emel atau kata laluan salah.'], 422);
+    }
+    $request->session()->regenerate();
+
+    return response()->json(['message' => 'ok']);
 });
 
 Route::middleware('auth')->group(function () {
