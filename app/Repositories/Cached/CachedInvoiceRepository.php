@@ -2,7 +2,9 @@
 
 namespace App\Repositories\Cached;
 
-use App\Models\{Invoice, Payment, Student};
+use App\Models\Invoice;
+use App\Models\Payment;
+use App\Models\Student;
 use App\Repositories\Contracts\InvoiceRepository;
 use Illuminate\Contracts\Cache\Repository as Cache;
 use Illuminate\Database\Eloquent\Collection;
@@ -23,6 +25,11 @@ final class CachedInvoiceRepository implements InvoiceRepository
             now()->addMinutes(10),
             fn () => $this->inner->outstandingFor($student),
         );
+    }
+
+    public function overdue(): Collection
+    {
+        return $this->inner->overdue();
     }
 
     public function recordPayment(Invoice $invoice, array $attributes): Payment
